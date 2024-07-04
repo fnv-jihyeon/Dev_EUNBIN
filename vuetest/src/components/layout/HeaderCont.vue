@@ -18,10 +18,10 @@
               <router-link to="service">서비스</router-link>
             </li>
             <li>
-              <router-link to="serviceApplication ">서비스 신청</router-link>
+              <router-link to="application">서비스 신청</router-link>
             </li>
             <li>
-              <router-link to="customerSupport">고객 지원</router-link>
+              <router-link to="customersupport">고객 지원</router-link>
             </li>
             <li>
               <router-link to="in">FINEVO IN</router-link>
@@ -29,7 +29,6 @@
           </ul>
         </nav>
       </div>
-      <router-view></router-view>
 
     </header>
   </template>
