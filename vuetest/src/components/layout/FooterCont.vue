@@ -8,72 +8,68 @@
           </p>
 
         </div>
-
         <div class="footer__right">
-          <p>피네보_웹사이트 제작</p>
+          <p>Copyright© 2024 Finevo Inc All Rights Reserved.</p>
         </div>
       </div>
     </footer>
   </template>
   <style lang="scss">
   //footer__wrap
+  
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .main-content {
+    flex: 1;
+  }
+  
   .footer__wrap {
+    width: 100%;
+    margin-top: auto;
+    position: fixed;
+    bottom: 0px; 
+
     .footer__inner {
       display: flex;
+      flex-direction: column;
+      align-items: center;
       flex-wrap: wrap;
-      justify-content: space-between;
+      padding: 30px 0; // added padding for space
+  
+      .footer__text, .footer__right {
+        width: 100%;
+        text-align: center;
+      }
+  
       .footer__text {
-        width: 30%;
+        margin-bottom: 10px;
         > h5 {
           font-size: 18px;
           line-height: 1.2;
           font-weight: 400;
-          margin-bottom: 25px;
+          margin-bottom: 10px;
         }
         > p {
           font-size: 14px;
           line-height: 1.7;
           font-weight: 400;
           color: #909090;
-          margin-bottom: 30px;
-        }
-        > ul {
-          > li {
-            display: inline;
-            > a {
-              display: inline-block;
-              width: 45px;
-              height: 45px;
-              background-color: #fff;
-              border-radius: 50%;
-              transition: background-color 0.3s;
-            }
-            a:hover {
-              background-color: #e0e9ff;
-            }
-            &:nth-child(2) a {
-              background-position: -45px 0;
-            }
-            &:nth-child(3) a {
-              background-position: -90px 0;
-            }
-            &:nth-child(4) a {
-              background-position: -135px 0;
-            }
-          }
+          margin-bottom: 5px;
         }
       }
-
+  
       .footer__right {
-        width: 100%;
-        padding: 30px;
-        text-align: center;
+        padding: 5px 0;
         border-top: 1px solid #e5e5e5;
-        margin-top: 50px;
-        color: #808080;
-        font-size: 14px;
+        color: #b7b6b6;
+        font-size: 10px;
       }
     }
   }
+   
   </style>
   

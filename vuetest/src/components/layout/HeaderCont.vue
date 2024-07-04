@@ -29,6 +29,8 @@
           </ul>
         </nav>
       </div>
+      <router-view></router-view>
+
     </header>
   </template>
   <style lang="scss">
@@ -44,7 +46,8 @@
           font-style: normal;
           font-weight: 500;
           text-decoration: none;
-          
+          color: black;
+
         }
       
     }
@@ -55,6 +58,7 @@
         padding: 0 10%;
         display: flex;
         justify-content: space-between;
+        list-style-type: none;
   
         li {
           a {
@@ -63,6 +67,7 @@
             margin: 2px;
             position: relative;
             text-decoration: none;
+            color: black;
   
             &::before {
               content: "";
