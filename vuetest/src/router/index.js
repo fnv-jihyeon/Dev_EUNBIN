@@ -3,8 +3,11 @@ import HomeView from "@/views/HomeView.vue";
 import IntroView from "@/views/IntroView.vue";
 import ServiceView from "@/views/ServiceView.vue";
 import CustomerSupportView from "@/views/CustomerSupportView.vue";
-import InView from "@/views/InView.vue";
+import AdminView from "@/views/AdminView.vue";
 import ApplicationView from "@/views/ApplicationView.vue";
+import LoginView from "@/views/LoginView.vue";
+import InView from "@/views/InView.vue";
+import MembershipView from "@/views/MembershipView.vue";
 
 
 
@@ -40,9 +43,27 @@ const routes = [
   },
 
   {
+    path: '/admin',
+    name: 'admin',
+    component: AdminView,
+  },
+
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+  },
+
+  {
     path: '/in',
     name: 'in',
     component: InView,
+  },
+
+  {
+    path: '/membership',
+    name: 'membership',
+    component: MembershipView,
   },
 
 ];
