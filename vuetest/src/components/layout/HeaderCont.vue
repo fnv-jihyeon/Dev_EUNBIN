@@ -38,18 +38,19 @@
 
   <style lang="scss">
   // header__wrap
+
 .header__inner {
   text-align: center;
-
   .header__logo {
     width: 100%;
 
     a {
       font-family: Gothic;
-      font-style: normal;
-      font-weight: 500;
-      text-decoration: none;
+      font-weight: bold;
       color: black;
+      text-decoration: none;
+      font-family: NanumSquareNeo;
+
     }
   }
   
@@ -70,6 +71,8 @@
           position: relative;
           text-decoration: none;
           color: black;
+          font-family: NanumSquareNeo;
+
 
           &::before {
             content: "";
@@ -92,25 +95,24 @@
   }
 
   button {
-    background-color: #686a6849; 
-    color: white; 
+    background-color: rgb(214, 209, 209); 
     border: none;
     padding: 10px 20px;
     text-decoration-line: none;
     font-size: 16px;
     border-radius: 5px;
     height: 40px; 
-    min-width: 120px; 
     vertical-align: middle; 
     margin-right: 10px;
-  
+
     &:hover {
-      background-color: #e3dedeeb; 
-      
+      background-color: #e3dedeeb;      
     }
     a{
       text-decoration: none;
       color: black;
+      font-size: 10px;
+      font-family: NanumSquareNeo;
 
     }
   }

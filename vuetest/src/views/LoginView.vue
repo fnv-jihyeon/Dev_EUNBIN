@@ -9,19 +9,18 @@
         <input type="password" v-model="password" class="form-control" placeholder="비밀번호를 입력하세요" required>
       </div>
       <button type="submit" class="btn btn-primary">로그인</button> <!--button의 기본값 submit. type 생략 가능 -->
-      <button type="button" @click="register" class="btn btn-secondary">회원가입</button>  <!--현재는 회원가입 버튼 누르면 그 자체가 제출되어서 회원가입 되도록 -->
     </form>
   </div>
 </template>
 
 <script>
-import { authenticateUser, registerUser } from '@/components/services/UserService'; //js경로 주의
+import { authenticateUser } from '@/components/services/UserService'; //js경로 주의
 
 export default {
   data() {
     return {
       id: '', 
-      password: '' //로그인, 회원가입 버튼 눌렀을 경우 폼 초기화되도록 설계 필요.
+      password: '' 
     };
   },
   methods: {
@@ -29,19 +28,21 @@ export default {
       const user = authenticateUser(this.id, this.password);
       if (user) {
         alert('로그인 성공!');
+        this.id = ''; //로그인 성공 후에 id, pw 초기화되도록
+        this.password = '';
       } else {
-        alert('로그인 실패: 잘못된 아이디나 비밀번호');
+        alert('로그인 실패: 다시 시도해주세요');
+        this.id = ''; //실패하더라도 id, pw 초기화되도록
+        this.password = '';
       }
     },
-    register() {
-      registerUser(this.id, this.password);
-      alert('회원가입 성공!');
-    }
+
   }
 };
 </script>
 
 <style scoped>
+
 .login-container {
   max-width: 400px;
   margin: 100px auto;
@@ -49,20 +50,35 @@ export default {
   border: 1px solid #ccc;
   border-radius: 8px;
   background: #fff;
+  font-family: NanumSquareNeo;
 }
-/*
-button{
-  background-color: #686a6849; 
-  color: #000000; 
+
+h1{
+  color: #4C64D9;
+}
+
+input{
+  width: 100%;
+  height: 48px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
   border: none;
-  padding: 10px 20px;
-  text-decoration-line: none;
-  font-size: 10px;
-  border-radius: 5px;
-  height: 30px; 
-  min-width: 40px; 
-  vertical-align: middle; 
-  margin-right: 10px;
+  border-bottom: 1px solid #CCC;
+  font-family: NanumSquareNeo;
+}
+
+button{
+  width: 100%;
+  height: 48px;
+  padding: 0 10px;
+  color: #fff;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background-color: #4C64D9;
+  border: none;
+  font-family: NanumSquareNeo;
 } 
-*/
+
 </style>
