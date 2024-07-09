@@ -36,6 +36,10 @@
     </header>
   </template>
 
+<script>
+//import { EventBus } from '@/eventBus';
+</script>
+
   <style lang="scss">
   // header__wrap
 
@@ -72,7 +76,6 @@
           text-decoration: none;
           color: black;
           font-family: NanumSquareNeo;
-
 
           &::before {
             content: "";
@@ -117,12 +120,11 @@
     }
   }
   
+  
   button:last-child {
     margin-right: 0; 
     margin-left: auto; 
   }
   
 }
-
   </style>
-  

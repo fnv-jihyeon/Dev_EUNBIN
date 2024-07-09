@@ -1,12 +1,13 @@
 <template>
   <div class="admin-container">
     <h1>사용자 관리</h1>
-    <!--
-    <div>
-      <input type="text" placeholder="검색어를 입력하세요">
-      <button>검색</button>
+    <div class="table-header">
+      <div>
+        <button @click="refreshUsers">전체보기</button>
+        <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요">
+        <button @click="filterUsers">검색</button>
+      </div>
     </div>
-    -->
     <table class="table">
       <thead>
         <tr>
@@ -19,13 +20,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="user in filteredUsers" :key="user.id">
           <td>{{ user.id }}</td>
           <td>{{ user.password }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.number }}</td>
           <td>{{ user.email }}</td>
-          <td><button @click="deleteUser(user.id)" class="btn btn-danger">X</button></td>
+          <td><button @click="deleteUser(user.id)" class="btnX">X</button></td>
         </tr>
       </tbody>
     </table>
@@ -33,21 +34,30 @@
 </template>
 
 <script>
-import { getAllUsers, deleteUser } from '@/components/services/UserService';
+import { getAllUsers, deleteUser, filterUsers } from '@/components/services/UserService';
 
 export default {
   data() {
     return {
-      users: []
+      users: [],
+      searchQuery: '',
+      filteredUsers: []
     };
   },
   created() {
-    this.users = getAllUsers();
+    this.refreshUsers();
   },
   methods: {
     deleteUser(id) {
       deleteUser(id);
+      this.refreshUsers();
+    },
+    filterUsers() {
+      this.filteredUsers = filterUsers(this.users, this.searchQuery);
+    },
+    refreshUsers() {
       this.users = getAllUsers();
+      this.filteredUsers = this.users;
     }
   }
 };
@@ -62,11 +72,13 @@ export default {
   border-radius: 8px;
   background: #fff;
   font-family: NanumSquareNeo;
+}
 
-  h1{
-    color: #4C64D9;
-  }
-table{
+h1 {
+  color: #4C64D9;
+}
+
+.table {
   border: 1px #a39485 solid;
   width: 100%;
   border-collapse: collapse;
@@ -74,27 +86,36 @@ table{
   overflow: hidden;
   text-align: center;
 }
+
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 td {
-  border-bottom: 1px solid rgba(0,0,0,.1);
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
   background: #fff;
   font-size: 12px;
 }
-th{
-  background: #d4d8ed;
 
+th {
+  background: #d4d8ed;
 }
 
-button{
+button {
   background: #d4d8ed;
   border-radius: 5px;
   border: none;
-} 
-input{
+  font-family: NanumSquareNeo;
+}
+
+input {
   border: none;
-  color: #fff;
+  color: #000000;
   border-bottom: 1px solid #CCC;
   text-align: center;
-
-}
+  font-family: NanumSquareNeo;
+  margin-right: 10px;
 }
 </style>

@@ -10,11 +10,16 @@
       </div>
       <button type="submit" class="btn btn-primary">로그인</button> <!--button의 기본값 submit. type 생략 가능 -->
     </form>
+    <div class="mb-3">
+      <button @click="findId" class="btn btn-secondary">아이디 찾기</button>
+      <button @click="findPassword" class="btn btn-secondary">비밀번호 찾기</button>
+    </div>
   </div>
 </template>
 
 <script>
-import { authenticateUser } from '@/components/services/UserService'; //js경로 주의
+import { authenticateUser, getAllUsers } from '@/components/services/UserService'; //js경로 주의
+//import { EventBus } from '@/eventBus';
 
 export default {
   data() {
@@ -27,7 +32,8 @@ export default {
     login() {
       const user = authenticateUser(this.id, this.password);
       if (user) {
-        alert('로그인 성공!');
+        //EventBus.$emit('use-eventbus',alert('로그인 성공!'));
+        alert('로그인 성공');
         this.id = ''; //로그인 성공 후에 id, pw 초기화되도록
         this.password = '';
       } else {
@@ -36,13 +42,34 @@ export default {
         this.password = '';
       }
     },
-
+    findId() {
+      const users = getAllUsers();
+      const email = prompt('가입한 이메일을 입력하세요');
+      const name = prompt('이름을 입력하세요');
+      const user = users.find(user => user.email === email && user.name === name);
+      if (user) {
+        alert(`아이디는 ${user.id} 입니다`);
+      } else {
+        alert('일치하는 정보가 없습니다');
+      }
+    },
+    findPassword() {
+      const users = getAllUsers();
+      const id = prompt('아이디를 입력하세요');
+      const email = prompt('가입한 이메일을 입력하세요');
+      const name = prompt('이름을 입력하세요');
+      const user = users.find(user => user.id === id && user.email === email && user.name === name);
+      if (user) {
+        alert(`비밀번호는 ${user.password} 입니다`);
+      } else {
+        alert('일치하는 정보가 없습니다');
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-
 .login-container {
   max-width: 400px;
   margin: 100px auto;
@@ -53,11 +80,11 @@ export default {
   font-family: NanumSquareNeo;
 }
 
-h1{
+h1 {
   color: #4C64D9;
 }
 
-input{
+input {
   width: 100%;
   height: 48px;
   padding: 0 10px;
@@ -68,7 +95,7 @@ input{
   font-family: NanumSquareNeo;
 }
 
-button{
+button {
   width: 100%;
   height: 48px;
   padding: 0 10px;
@@ -79,6 +106,9 @@ button{
   background-color: #4C64D9;
   border: none;
   font-family: NanumSquareNeo;
-} 
+}
 
+.btn-secondary {
+  background-color: #6c757d;
+}
 </style>

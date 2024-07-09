@@ -49,3 +49,35 @@ export function searchSameId(id){
   }
 };
 */
+
+export function checkDuplicateId(id) {
+  const users = getUsers();
+  return users.some(user => user.id === id);
+}
+
+export function filterUsers(users, query) {
+  query = query.toLowerCase();
+  return users.filter(user => { // 초기에 오류났던 부분. 각 속성이 정의되어있는지 확인하고 toLowerCase를 호출해야함 
+    const id = user.id ? user.id.toLowerCase() : '';
+    const password = user.password ? user.password.toLowerCase() : '';
+    const name = user.name ? user.name.toLowerCase() : '';
+    const number = user.number ? user.number.toLowerCase() : '';
+    const email = user.email ? user.email.toLowerCase() : '';
+
+    return (
+      id.includes(query) ||
+      password.includes(query) ||
+      name.includes(query) ||
+      number.includes(query) ||
+      email.includes(query)
+    );
+  });
+}
+
+
+/*
+export function refreshUsers() { 
+  this.users = getAllUsers();
+  this.filteredUsers = this.users;
+}
+  */
