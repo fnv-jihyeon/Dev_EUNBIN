@@ -1,14 +1,14 @@
 <template>
   <div class="login-container">
     <h1 class="mb-4">Login</h1>
-    <form @submit.prevent="login"> <!--리로드 방지 prevent 사용-->
+    <form @submit.prevent="login">
       <div class="mb-3">
-        <input type="text" v-model="id" class="form-control" placeholder="아이디를 입력하세요" required>
+        <input type="text" v-model="id" @input="validateId" class="form-control" placeholder="아이디를 입력하세요" required>
       </div>
       <div class="mb-3">
         <input type="password" v-model="password" class="form-control" placeholder="비밀번호를 입력하세요" required>
       </div>
-      <button type="submit" class="btn btn-primary">로그인</button> <!--button의 기본값 submit. type 생략 가능 -->
+      <button type="submit" class="btn btn-primary">로그인</button>
     </form>
     <div class="mb-3">
       <button @click="findId" class="btn btn-secondary">아이디 찾기</button>
@@ -18,27 +18,27 @@
 </template>
 
 <script>
-import { authenticateUser, getAllUsers } from '@/components/services/UserService'; //js경로 주의
-//import { EventBus } from '@/eventBus';
+import { authenticateUser, getAllUsers } from '@/components/services/UserService';
+import mitt from '@/mitt';
 
 export default {
   data() {
     return {
-      id: '', 
-      password: '' 
+      id: '',
+      password: ''
     };
   },
   methods: {
     login() {
       const user = authenticateUser(this.id, this.password);
       if (user) {
-        //EventBus.$emit('use-eventbus',alert('로그인 성공!'));
-        alert('로그인 성공');
-        this.id = ''; //로그인 성공 후에 id, pw 초기화되도록
+        mitt.emit('login-success'); // 로그인 성공 시 이벤트 발생
+        alert('로그인되었습니다');
+        this.id = '';
         this.password = '';
       } else {
         alert('로그인 실패: 다시 시도해주세요');
-        this.id = ''; //실패하더라도 id, pw 초기화되도록
+        this.id = '';
         this.password = '';
       }
     },
@@ -63,6 +63,14 @@ export default {
         alert(`비밀번호는 ${user.password} 입니다`);
       } else {
         alert('일치하는 정보가 없습니다');
+      }
+    },
+    validateId(event) {
+      const regex = /^[a-zA-Z0-9]*$/; // 영숫자만 허용하는 정규 표현식
+      if (!regex.test(event.target.value)) {
+        event.target.value = this.id; // 이전 값으로 되돌리도록
+      } else {
+        this.id = event.target.value;
       }
     }
   }

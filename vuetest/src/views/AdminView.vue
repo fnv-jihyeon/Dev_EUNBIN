@@ -24,7 +24,7 @@
           <td>{{ user.id }}</td>
           <td>{{ user.password }}</td>
           <td>{{ user.name }}</td>
-          <td>{{ user.number }}</td>
+          <td>{{ user.tel }}</td>
           <td>{{ user.email }}</td>
           <td><button @click="deleteUser(user.id)" class="btnX">X</button></td>
         </tr>

@@ -8,6 +8,7 @@ import ApplicationView from "@/views/ApplicationView.vue";
 import LoginView from "@/views/LoginView.vue";
 import InView from "@/views/InView.vue";
 import MembershipView from "@/views/MembershipView.vue";
+import MypageView from "@/views/MypageView.vue";
 
 
 
@@ -65,7 +66,11 @@ const routes = [
     name: 'membership',
     component: MembershipView,
   },
-
+  {
+    path: '/mypage',
+    name: 'mypage',
+    component: MypageView,
+  },
 ];
 
 const router = createRouter({

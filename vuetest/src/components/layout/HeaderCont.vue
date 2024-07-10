@@ -1,43 +1,72 @@
-  <template>
-    <header id="header" class="header__wrap Nanum5 bg-vue" role="heading" aria-level="1">
-      <div class="header__inner container">
-        <h1 class="header__logo">
-          <router-link to="/"><a>finevo</a></router-link>
-        </h1>
-        <button>
-          <router-link to="login"><a>Login</a></router-link>
-        </button>
-        <button>
-          <router-link to="admin"><a>관리자</a></router-link>
-        </button>
-        <button>
-          <router-link to="membership"><a>회원가입</a></router-link>
-        </button>
-        <nav class="header__nav" role="navigation">
-          <ul>
-            <li>
-              <router-link to="intro">회사 소개</router-link>
-            </li>
-            <li>
-              <router-link to="service">서비스</router-link>
-            </li>
-            <li>
-              <router-link to="application">서비스 신청</router-link>
-            </li>
-            <li>
-              <router-link to="customersupport">고객 지원</router-link>
-            </li>
-            <li>
-              <router-link to="in">FINEVO IN</router-link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  </template>
+<template>
+  <header id="header" class="header__wrap Nanum5 bg-vue" role="heading" aria-level="1">
+    <div class="header__inner container">
+      <h1 class="header__logo">
+        <router-link to="/"><a>finevo</a></router-link>
+      </h1>
+      <button v-if="!isLoggedIn">
+        <router-link to="login"><a>Login</a></router-link>
+      </button>
+      <button v-if="isLoggedIn" @click="logout">
+        <a>Logout</a>
+      </button>
+      <button>
+        <router-link to="admin"><a>관리자</a></router-link>
+      </button>
+      <button>
+        <router-link to="membership"><a>회원가입</a></router-link>
+      </button>
+      <button v-if="isLoggedIn">
+        <router-link to="mypage"><a>마이페이지</a></router-link>
+      </button>
+      <nav class="header__nav" role="navigation">
+        <ul>
+          <li>
+            <router-link to="intro">회사 소개</router-link>
+          </li>
+          <li>
+            <router-link to="service">서비스</router-link>
+          </li>
+          <li>
+            <router-link to="application">서비스 신청</router-link>
+          </li>
+          <li>
+            <router-link to="customersupport">고객 지원</router-link>
+          </li>
+          <li>
+            <router-link to="in">FINEVO IN</router-link>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+</template>
 
 <script>
-//import { EventBus } from '@/eventBus';
+import mitt from '@/mitt'; 
+
+export default {
+  data() {
+    return {
+      isLoggedIn: false // 로그인 상태를 저장하는 변수
+    };
+  },
+  created() {
+    mitt.on('login-success', this.handleLoginSuccess); // 이벤트 리스닝
+  },
+  methods: {
+    handleLoginSuccess() {
+      this.isLoggedIn = true; 
+    },
+    logout() {
+      this.isLoggedIn = false; 
+      alert('로그아웃 되었습니다');
+    }
+  },
+  beforeUnmount() {
+    mitt.off('login-success', this.handleLoginSuccess); // 컴포넌트가 소멸 시 이벤트 리스너 제거
+  }
+};
 </script>
 
   <style lang="scss">
@@ -90,7 +119,7 @@
           }
 
           &:hover::before {
-            transform: scaleX(1);
+            transform: scaleX(1); //X축을 따라 요소의 크기를 조절하는 것. 1=100%. 원래 크기로 변경
           }
         }
       }
@@ -119,7 +148,6 @@
 
     }
   }
-  
   
   button:last-child {
     margin-right: 0; 

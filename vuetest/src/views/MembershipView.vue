@@ -3,7 +3,9 @@
     <h1 class="mb-4">회원가입</h1>
     <form @submit.prevent="register">
       <div class="mb-3">
-        <input type="text" v-model="id" class="form-control" placeholder="사용하실 아이디를 입력하세요" required pattern="[A-Za-z0-9]+" title="아이디는 영어와 숫자만 입력 가능합니다."> <!-- 숫자만은 불가능하게 수정해야함-->
+    <!--<input type="text" v-model="id" class="form-control" placeholder="사용하실 아이디를 입력하세요" required @input="restrictIdInput">-->
+        <input type="text" v-model="id" class="form-control" placeholder="사용하실 아이디를 입력하세요" oninput="this.value=this.value.replace(/[^a-zA-Z0-9]/g,'');">
+
         <button type="button" class="btn btn-secondary" @click="checkIdAvailability">중복 확인</button>
       </div>
       <div class="mb-3">
@@ -13,7 +15,8 @@
         <input type="text" v-model="name" class="form-control" placeholder="이름을 입력하세요" required>
       </div>
       <div class="mb-3">
-        <input type="text" v-model="number" class="form-control" placeholder="전화번호를 입력하세요" required pattern="\d+" title="전화번호는 숫자만 입력 가능합니다.">
+      <!--<input type="tel" v-model="tel" class="form-control" placeholder="전화번호를 입력하세요" required @input="restrictNumberInput">-->
+        <input type="text" v-model="tel" class="form-control" placeholder="전화번호를 입력하세요" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
       </div>
       <div class="mb-3">
         <input type="email" v-model="email" class="form-control" placeholder="이메일을 입력하세요" required>
@@ -32,9 +35,9 @@ export default {
       id: '',
       password: '',
       name: '',
-      number: '',
+      tel: '',
       email: '',
-      isIdChecked: false, 
+      isIdChecked: false,
     };
   },
   methods: {
@@ -45,21 +48,21 @@ export default {
         return;
       }
 
-      // 입력 값이 모두 채워져 있는지 확인 + 중복 확인 필수 
-      if (this.id && this.password && this.name && this.number && this.email) {
+      // 입력 값이 모두 채워져 있는지 확인 + 중복 확인 필수
+      if (this.id && this.password && this.name && this.tel && this.email) {
         if (!this.isIdChecked) {
           alert('아이디 중복 확인을 해주세요.');
           return;
         }
 
         // 회원가입 처리
-        registerUser(this.id, this.password, this.name, this.number, this.email);
+        registerUser(this.id, this.password, this.name, this.tel, this.email);
         alert('회원가입 성공!');
         // 폼 초기화
         this.id = '';
         this.password = '';
         this.name = '';
-        this.number = '';
+        this.tel = '';
         this.email = '';
         this.isIdChecked = false; // 중복 확인 상태 초기화에 필요
       } else {
@@ -93,9 +96,31 @@ export default {
         alert('사용 가능한 아이디입니다.');
         this.isIdChecked = true;
       }
+    },
+    restrictIdInput(event) { //현재 restrictIdInput, restrictNumberInput 제대로 작동 x
+      this.id = event.target.value.replace(/[^A-Za-z0-9]/g, '');
+},
+    restrictNumberInput(event) {
+      // 전화번호 필드에서 숫자 이외의 입력 방지
+      this.tel = event.target.value.replace(/\D/g, '');
     }
   }
 };
+/*    restrictIdInput(event) { //현재 제대로 작동x 
+      const regex = /^[a-zA-Z0-9]*$/; // 영숫자만 허용하는 정규 표현식
+      if (!regex.test(event.target.value)) {
+        event.target.value = this.id; // 이전 값으로 되돌림
+      } else {
+        this.id = event.target.value;
+      }
+    },
+    restrictNumberInput(event) {
+      // 전화번호 필드에서 숫자 이외의 입력 방지
+      this.tel = event.target.value.replace(/\D/g, '');
+    }
+  }
+};
+*/
 </script>
 
 <style scoped>
@@ -134,12 +159,5 @@ export default {
     border: none;
     font-family: NanumSquareNeo;
   }
-}
-
-/* 하단 input type = number일 때 표시되는 화살표 삭제 코드 */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 </style>
