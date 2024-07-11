@@ -30,18 +30,21 @@ export default {
   },
   methods: {
     login() {
-      const user = authenticateUser(this.id, this.password);
-      if (user) {
-        mitt.emit('login-success'); // 로그인 성공 시 이벤트 발생
-        alert('로그인되었습니다');
-        this.id = '';
-        this.password = '';
-      } else {
-        alert('로그인 실패: 다시 시도해주세요');
-        this.id = '';
-        this.password = '';
-      }
-    },
+  const user = authenticateUser(this.id, this.password);
+  if (user) {
+    mitt.emit('login-success'); // 로그인 성공 시 이벤트 발생
+    const LOGGED_IN_USER_KEY = 'loggedInUser';
+    localStorage.setItem(LOGGED_IN_USER_KEY, JSON.stringify(user)); // 현재 로그인된 사용자 정보 저장
+    alert('로그인되었습니다');
+    this.id = '';
+    this.password = '';
+  } else {
+    alert('로그인 실패: 다시 시도해주세요');
+    this.id = '';
+    this.password = '';
+  }
+}
+,
     findId() {
       const users = getAllUsers();
       const email = prompt('가입한 이메일을 입력하세요');

@@ -3,7 +3,6 @@
     <h1 class="mb-4">회원가입</h1>
     <form @submit.prevent="register">
       <div class="mb-3">
-    <!--<input type="text" v-model="id" class="form-control" placeholder="사용하실 아이디를 입력하세요" required @input="restrictIdInput">-->
         <input type="text" v-model="id" class="form-control" placeholder="사용하실 아이디를 입력하세요" oninput="this.value=this.value.replace(/[^a-zA-Z0-9]/g,'');">
 
         <button type="button" class="btn btn-secondary" @click="checkIdAvailability">중복 확인</button>
@@ -15,7 +14,6 @@
         <input type="text" v-model="name" class="form-control" placeholder="이름을 입력하세요" required>
       </div>
       <div class="mb-3">
-      <!--<input type="tel" v-model="tel" class="form-control" placeholder="전화번호를 입력하세요" required @input="restrictNumberInput">-->
         <input type="text" v-model="tel" class="form-control" placeholder="전화번호를 입력하세요" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
       </div>
       <div class="mb-3">
@@ -98,7 +96,7 @@ export default {
       }
     },
     restrictIdInput(event) { //현재 restrictIdInput, restrictNumberInput 제대로 작동 x
-      this.id = event.target.value.replace(/[^A-Za-z0-9]/g, '');
+      this.id = event.target.value.replace(/[^A-Za-z0-9]/g, ''); ///^[a-zA-Z0-9]*$/영숫자로만 구성된 문자열
 },
     restrictNumberInput(event) {
       // 전화번호 필드에서 숫자 이외의 입력 방지
@@ -106,21 +104,7 @@ export default {
     }
   }
 };
-/*    restrictIdInput(event) { //현재 제대로 작동x 
-      const regex = /^[a-zA-Z0-9]*$/; // 영숫자만 허용하는 정규 표현식
-      if (!regex.test(event.target.value)) {
-        event.target.value = this.id; // 이전 값으로 되돌림
-      } else {
-        this.id = event.target.value;
-      }
-    },
-    restrictNumberInput(event) {
-      // 전화번호 필드에서 숫자 이외의 입력 방지
-      this.tel = event.target.value.replace(/\D/g, '');
-    }
-  }
-};
-*/
+
 </script>
 
 <style scoped>
