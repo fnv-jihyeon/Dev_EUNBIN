@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Dev_EUNBIN.iml" filepath="$PROJECT_DIR$/.idea/Dev_EUNBIN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/finevoBack.main.iml" filepath="$PROJECT_DIR$/.idea/modules/finevoBack.main.iml" />
     </modules>
   </component>
 </project>
