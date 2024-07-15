@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/api")
 public class UserController {
@@ -29,7 +33,33 @@ public class UserController {
     public String getMembershipPage() {
         return "membership";
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            Optional<User> user = userRepository.findById(id);
+            if (!user.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            userRepository.delete(user.get());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/users/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String query) {
+        List<User> users = userRepository.findByName(query);
+        return ResponseEntity.ok(users);
+    }
+
+
 }
-
-
-
