@@ -8,5 +8,10 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    List<User> findByName(String name);
+
+    List<User> findByName(String name); //AdminView 검색
+
+    boolean existsByUserId(String userId); //Id 중복확인
+
+    User findByUserId(String userId); // 사용자 로그인
 }
