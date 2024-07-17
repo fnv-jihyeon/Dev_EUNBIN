@@ -2,6 +2,8 @@ package com.example.finevoback.controller;
 
 import com.example.finevoback.entity.User;
 import com.example.finevoback.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api")
@@ -30,7 +33,6 @@ public class UserController {
 
             User savedUser = userRepository.save(user);
             return ResponseEntity.ok(savedUser);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 중 오류가 발생했습니다: " + e.getMessage());
@@ -76,21 +78,63 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User loginUser) {
+    public ResponseEntity<String> login(@RequestBody User loginUser, HttpSession session) {
         String userId = loginUser.getUserId();
         String password = loginUser.getPassword();
 
+        // 1. 사용자 정보 조회
         User user = userRepository.findByUserId(userId);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자를 찾을 수 없습니다.");
         }
 
+        // 2. 비밀번호 체크
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
         }
 
+        // 3. 조건 일치 시 세션에 사용자 정보 저장
+        session.setAttribute("user", user);
         return ResponseEntity.ok("로그인 성공");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return ResponseEntity.ok("로그아웃 성공");
+    }
 
+    /*
+    @GetMapping("/users/names")
+    public ResponseEntity<List<String>> getAllUserNames() {
+        List<String> names = userRepository.findAll().stream()
+                .map(User::getName)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(names);
+    }
+
+    @GetMapping("/user/name")
+    public ResponseEntity<String> getLoggedInUserName(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return ResponseEntity.ok(user.getName());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
+        }
+    }
+
+    */
+
+    @GetMapping("/user/info")
+    public ResponseEntity<User> getLoggedInUserInfo(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return null;
+        }
+    }
 }
