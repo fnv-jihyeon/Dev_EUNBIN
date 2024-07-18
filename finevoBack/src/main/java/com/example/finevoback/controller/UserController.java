@@ -106,27 +106,48 @@ public class UserController {
         }
         return ResponseEntity.ok("로그아웃 성공");
     }
-
-    /*
-    @GetMapping("/users/names")
-    public ResponseEntity<List<String>> getAllUserNames() {
-        List<String> names = userRepository.findAll().stream()
-                .map(User::getName)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(names);
-    }
-
-    @GetMapping("/user/name")
-    public ResponseEntity<String> getLoggedInUserName(HttpSession session) {
+    @PutMapping("/user/info")
+    public ResponseEntity<?> updateUserInfo(@RequestBody User updatedUser, HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            return ResponseEntity.ok(user.getName());
-        } else {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
+        }
+
+        try {
+            user.setName(updatedUser.getName());
+            user.setEmail(updatedUser.getEmail());
+            userRepository.save(user);
+
+            session.setAttribute("user", user); // 업데이트된 사용자 정보로 세션 업데이트
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 정보를 업데이트하는 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-    */
+    @PutMapping("/user/changepw")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인된 사용자가 없습니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        try {
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호를 변경하는 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 
     @GetMapping("/user/info")
     public ResponseEntity<User> getLoggedInUserInfo(HttpSession session) {
@@ -134,7 +155,28 @@ public class UserController {
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    static class ChangePasswordRequest {
+        private String currentPassword;
+        private String newPassword;
+
+        public String getCurrentPassword() {
+            return currentPassword;
+        }
+
+        public void setCurrentPassword(String currentPassword) {
+            this.currentPassword = currentPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
         }
     }
 }
