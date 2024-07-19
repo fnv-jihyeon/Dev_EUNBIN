@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api")
@@ -28,7 +27,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
-            String encodedPassword = passwordEncoder.encode(user.getPassword()); // 저장부터 비밀번호 암호화
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
 
             User savedUser = userRepository.save(user);
@@ -82,18 +81,15 @@ public class UserController {
         String userId = loginUser.getUserId();
         String password = loginUser.getPassword();
 
-        // 1. 사용자 정보 조회
         User user = userRepository.findByUserId(userId);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자를 찾을 수 없습니다.");
         }
 
-        // 2. 비밀번호 체크
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
         }
 
-        // 3. 조건 일치 시 세션에 사용자 정보 저장
         session.setAttribute("user", user);
         return ResponseEntity.ok("로그인 성공");
     }
@@ -106,6 +102,7 @@ public class UserController {
         }
         return ResponseEntity.ok("로그아웃 성공");
     }
+
     @PutMapping("/user/info")
     public ResponseEntity<?> updateUserInfo(@RequestBody User updatedUser, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -118,7 +115,7 @@ public class UserController {
             user.setEmail(updatedUser.getEmail());
             userRepository.save(user);
 
-            session.setAttribute("user", user); // 업데이트된 사용자 정보로 세션 업데이트
+            session.setAttribute("user", user);
 
             return ResponseEntity.ok(user);
         } catch (Exception e) {
@@ -156,6 +153,54 @@ public class UserController {
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @PostMapping("/forgotpw")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        Optional<User> userOptional = userRepository.findByUserIdAndEmail(request.getUserId(), request.getEmail());
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 정보를 찾을 수 없습니다.");
+        }
+
+        User user = userOptional.get();
+        return ResponseEntity.ok().body(new PasswordResponse(user.getPassword()));
+    }
+
+    static class ForgotPasswordRequest {
+        private String userId;
+        private String email;
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+    }
+
+    static class PasswordResponse {
+        private String password;
+
+        public PasswordResponse(String password) {
+            this.password = password;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
     }
 
