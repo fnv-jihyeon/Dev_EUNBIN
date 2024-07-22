@@ -156,20 +156,51 @@ public class UserController {
         }
     }
 
-    @PostMapping("/forgotpw")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        Optional<User> userOptional = userRepository.findByUserIdAndEmail(request.getUserId(), request.getEmail());
-        if (!userOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 정보를 찾을 수 없습니다.");
+    @PutMapping("/user/resetpw")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        Optional<User> optionalUser = userRepository.findByUserIdAndEmail(request.getUserId(), request.getEmail());
+
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 이름 또는 이메일이 일치하지 않습니다.");
         }
 
-        User user = userOptional.get();
-        return ResponseEntity.ok().body(new PasswordResponse(user.getPassword()));
+        try {
+            User user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호를 변경하는 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
-    static class ForgotPasswordRequest {
+    static class ChangePasswordRequest {
+        private String currentPassword;
+        private String newPassword;
+
+        public String getCurrentPassword() {
+            return currentPassword;
+        }
+
+        public void setCurrentPassword(String currentPassword) {
+            this.currentPassword = currentPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
+    }
+
+    static class ResetPasswordRequest {
         private String userId;
         private String email;
+        private String newPassword;
 
         public String getUserId() {
             return userId;
@@ -185,35 +216,6 @@ public class UserController {
 
         public void setEmail(String email) {
             this.email = email;
-        }
-    }
-
-    static class PasswordResponse {
-        private String password;
-
-        public PasswordResponse(String password) {
-            this.password = password;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    static class ChangePasswordRequest {
-        private String currentPassword;
-        private String newPassword;
-
-        public String getCurrentPassword() {
-            return currentPassword;
-        }
-
-        public void setCurrentPassword(String currentPassword) {
-            this.currentPassword = currentPassword;
         }
 
         public String getNewPassword() {
