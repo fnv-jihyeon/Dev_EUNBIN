@@ -4,6 +4,8 @@ import LoginView from "@/views/LoginView.vue";
 import MembershipView from "@/views/MembershipView.vue";
 import AdminView from "@/views/AdminView.vue";
 import MyPageView from "@/views/MyPageView.vue";
+import NaverLoginView from "@/views/NaverLoginView.vue";
+
 
 const routes = [
   {
@@ -34,6 +36,12 @@ const routes = [
     path: '/mypage',
     name: 'mypage',
     component: MyPageView,
+  },
+
+  {
+    path: '/naverlogin',
+    name: 'naverlogin',
+    component: NaverLoginView,
   },
 ]
 

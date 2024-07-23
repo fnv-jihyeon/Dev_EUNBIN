@@ -3,6 +3,7 @@
     <v-card>
       <v-tabs>
         <v-tab @click="$router.push('/login')">로그인</v-tab>
+        <v-tab @click="$router.push('/naverlogin')">네이버로그인</v-tab>
         <v-tab @click="$router.push('/admin')">관리자</v-tab>
         <v-tab @click="$router.push('/membership')">회원가입</v-tab>
         <v-tab @click="$router.push('/mypage')" v-if="isLoggedIn">마이페이지</v-tab>
