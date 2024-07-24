@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <div id="naverIdLogin" @click="sendTokenToServer"></div>
+    <div id="naverIdLogin"></div>
     <button type="button" @click="logout">로그아웃</button>
   </v-container>
 </template>
@@ -15,6 +15,7 @@ export default {
     };
   },
   mounted() {
+    // 네이버 로그인 SDK 초기화
     this.naverLogin = new window.naver.LoginWithNaverId({
       clientId: "50PITAaw8WSkVynGQgS6",
       callbackUrl: "http://localhost:3000/login/oauth2/code/naver",
@@ -32,35 +33,33 @@ export default {
       if (status) {
         console.log("Login Status:", status);
         console.log("User Info:", this.naverLogin.user);
+        console.log("Access Token:", this.naverLogin.accessToken.accessToken);
 
-        this.sendTokenToServer(this.naverLogin.accessToken.accessToken);
-      } else {
-        console.log("Callback 처리에 실패했습니다.");
+        // 로그인 성공 후 액세스 토큰을 localStorage에 저장
+        localStorage.setItem('naver_access_token', this.naverLogin.accessToken.accessToken);
       }
     });
   },
   methods: {
-    sendTokenToServer(accessToken) {
-      axios.post('http://localhost:3000/api/naverlogin', { accessToken })
-          .then((response) => {
-            console.log("서버 응답:", response.data);
-          })
-          .catch((error) => {
-            console.error("토큰 오류:", error);
-          });
-    }
-,
     logout() {
-      const accessToken = this.naverLogin.accessToken.accessToken;
-      axios.post('http://localhost:3000/api/naverlogout', { accessToken })
-          .then((response) => {
-            console.log("로그아웃:", response.data);
-          })
-          .catch((error) => {
-            console.error("로그아웃 중 오류가 발생하였습니다:", error);
-          });
-    }
+      const accessToken = localStorage.getItem('naver_access_token');
+      if (accessToken) {
+        console.log("Logout Access Token:", accessToken);
 
+        // 네이버 로그아웃 요청
+        axios.post('http://localhost:3000/api/naverlogout', { accessToken })
+            .then((response) => {
+              console.log("로그아웃:", response.data);
+
+              // 로그아웃 후 localStorage에서 액세스 토큰 제거
+              localStorage.removeItem('naver_access_token');
+              this.$router.push('/');
+            })
+            .catch((error) => {
+              console.error("로그아웃 중 오류가 발생하였습니다:", error.response ? error.response.data : error.message);
+            });
+      }
+    }
   }
 };
 </script>

@@ -16,6 +16,7 @@
               v-model="password"
               label="비밀번호"
               type="password"
+              autocomplete="off"
               required
               :rules="passwordRules"
               prepend-icon="mdi-lock"
@@ -23,6 +24,7 @@
           <v-text-field
               v-model="confirmPassword"
               label="비밀번호 확인"
+              autocomplete="off"
               type="password"
               required
               :rules="confirmPasswordRules"

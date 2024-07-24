@@ -10,13 +10,15 @@
               required
               prepend-icon="mdi-account"
           ></v-text-field>
+          <!--autocomplete="off" => 크롬 모든 비밀번호, 폼데이터 자동완성 시도, 개발자에게 요소범위 준수 권고 알림. off 하면 안뜸.-->
           <v-text-field
               v-model="password"
               label="비밀번호"
               type="password"
+              autocomplete="off"
               required
-              prepend-icon="mdi-lock"
-          ></v-text-field>
+              prepend-icon="mdi-lock" >
+          </v-text-field>
           <v-btn type="submit" color="primary" :disabled="!valid">로그인</v-btn>
           <v-btn text @click="showResetPasswordDialog">비밀번호 재설정</v-btn>
         </v-form>

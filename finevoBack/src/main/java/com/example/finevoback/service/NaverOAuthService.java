@@ -1,12 +1,13 @@
 package com.example.finevoback.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,21 +46,21 @@ public class NaverOAuthService {
         ResponseEntity<String> response = restTemplate.exchange(userInfoEndpoint, HttpMethod.GET, entity, String.class);
 
         try {
-            return objectMapper.readValue(response.getBody(), Map.class);
+            Map<String, Object> userInfo = objectMapper.readValue(response.getBody(), Map.class);
+            return userInfo;
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse user information", e);
         }
     }
 
     public void logout(String accessToken) {
-        String logoutEndpoint = "https://nid.naver.com/oauth2.0/token";
-        Map<String, String> params = new HashMap<>();
-        params.put("grant_type", "delete");
-        params.put("client_id", "50PITAaw8WSkVynGQgS6");
-        params.put("client_secret", "kIqdzsVf8y");
-        params.put("access_token", accessToken);
-        params.put("service_provider", "NAVER");
+        String logoutEndpoint = "https://nid.naver.com/oauth2.0/logout";
+        String url = UriComponentsBuilder.fromHttpUrl(logoutEndpoint)
+                .queryParam("access_token", accessToken)
+                .queryParam("service_provider", "naver")
+                .toUriString();
 
-        restTemplate.postForEntity(logoutEndpoint, params, String.class);
+        // RestTemplate을 사용하여 POST 요청
+        restTemplate.postForObject(url, null, String.class);
     }
 }

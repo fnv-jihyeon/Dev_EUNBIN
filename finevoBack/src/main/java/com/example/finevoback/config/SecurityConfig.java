@@ -1,20 +1,16 @@
 package com.example.finevoback.config;
 
 import com.example.finevoback.service.CustomOAuth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity
@@ -41,11 +37,8 @@ public class SecurityConfig {
     @Value("${naver.logout-url}")
     private String logoutUrl;
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-
-    public SecurityConfig(@Lazy CustomOAuth2UserService customOAuth2UserService) {
-        this.customOAuth2UserService = customOAuth2UserService;
-    }
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -58,6 +51,7 @@ public class SecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login_proc")
+                                .defaultSuccessUrl("/home", true) // 로그인 성공 시 이동할 URL
                                 .permitAll()
                 )
                 .logout(logout ->
@@ -66,8 +60,11 @@ public class SecurityConfig {
                                 .logoutSuccessUrl("/login")
                                 .permitAll()
                 )
-
-                .csrf().disable();
+                .sessionManagement(sessionManagement ->
+                        sessionManagement
+                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 생성 정책 설정
+                )
+                .csrf().disable(); // CSRF 보호 비활성화
 
         return http.build();
     }
@@ -76,31 +73,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId("naver")
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .redirectUri(redirectUri)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationUri(authorizationUri)
-                .tokenUri(tokenUri)
-                .userInfoUri(userInfoUri)
-                .userNameAttributeName("id")
-                .clientName("Naver")
-                .build();
-
-        return new InMemoryClientRegistrationRepository(clientRegistration);
-    }
-
-    @Configuration
-    public class AppConfig {
-
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
-    }
-
 }

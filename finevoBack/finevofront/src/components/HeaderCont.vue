@@ -41,7 +41,7 @@ export default {
           this.email = response.data.email;
         }
       } catch (error) {
-        console.error('사용자 정보를 가져오는 중 오류가 발생했습니다:', error);
+        return null;
       }
     },
     async logout() {

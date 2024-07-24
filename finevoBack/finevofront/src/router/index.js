@@ -43,6 +43,17 @@ const routes = [
     name: 'naverlogin',
     component: NaverLoginView,
   },
+  {
+    path: '/login/oauth2/code/naver',
+    redirect: '/',
+    component: AboutView
+  },
+
+  {
+    path: '/naverlogout',
+    name: 'naverlogout',
+    component: AboutView
+  },
 ]
 
 const router = createRouter({
