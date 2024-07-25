@@ -13,15 +13,17 @@ public class User {
     private String email;
     private String password;
     private String name;
+    private String socialType;
 
     public User() {
     }
 
-    public User(String userId, String email, String password, String name) {
+    public User(String userId, String email, String password, String name, String socialType) {
         this.userId = userId;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.socialType = socialType;
     }
 
     public Long getId() {
@@ -63,4 +65,11 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
-}
+
+    public String getSocialType() {
+        return socialType;
+    }
+
+    public void setSocialType(String socialType) {
+        this.socialType = socialType;
+    }}

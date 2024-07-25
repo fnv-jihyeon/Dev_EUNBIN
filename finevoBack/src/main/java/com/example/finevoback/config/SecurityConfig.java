@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,8 +38,12 @@ public class SecurityConfig {
     @Value("${naver.logout-url}")
     private String logoutUrl;
 
+    private final CustomOAuth2UserService customOAuth2UserService;
+
     @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+    public SecurityConfig(@Lazy CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,7 +56,7 @@ public class SecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login_proc")
-                                .defaultSuccessUrl("/home", true) // 로그인 성공 시 이동할 URL
+                                .defaultSuccessUrl("/home", true)
                                 .permitAll()
                 )
                 .logout(logout ->
@@ -62,9 +67,9 @@ public class SecurityConfig {
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement
-                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 생성 정책 설정
+                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                .csrf().disable(); // CSRF 보호 비활성화
+                .csrf().disable();
 
         return http.build();
     }
