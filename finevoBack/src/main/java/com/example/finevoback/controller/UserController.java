@@ -163,7 +163,6 @@ public class UserController {
         if (!optionalUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 이름 또는 이메일이 일치하지 않습니다.");
         }
-
         try {
             User user = optionalUser.get();
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));

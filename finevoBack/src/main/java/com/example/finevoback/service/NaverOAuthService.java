@@ -2,6 +2,9 @@ package com.example.finevoback.service;
 
 import com.example.finevoback.entity.User;
 import com.example.finevoback.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,9 +17,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class NaverOAuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(NaverOAuthService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -41,7 +47,6 @@ public class NaverOAuthService {
         try {
             responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
         } catch (HttpClientErrorException e) {
-            System.err.println("오류가 발생하였습니다: " + e.getResponseBodyAsString());
             throw new RuntimeException("오류가 발생하였습니다", e);
         }
 
@@ -50,35 +55,29 @@ public class NaverOAuthService {
             throw new RuntimeException("오류가 발생하였습니다");
         }
 
-        // response 키의 값을 사용자 정보로 가져옴
         Map<String, Object> userInfo = (Map<String, Object>) response.get("response");
-        String email = (String) userInfo.get("email");
-        String name = (String) userInfo.get("name");
+        return userInfo;
+    }
 
-        // 연동 관련 : userId나 email이 이미 존재하는지 확인 -> 재구현 필요
-        boolean userIdExists = userRepository.existsByUserId(email);
+    @Transactional
+    public Optional<User> handleUserAttributes(Map<String, Object> attributes) {
+        String email = (String) attributes.get("email");
+        String name = (String) attributes.get("name");
 
-        if (userIdExists) {
-            //회원 이력이 있으면
-            throw new RuntimeException("기존에 회원가입한 이력이 있습니다");
-        } else {
-            // 새로운 사용자라면
-            User user = new User();
-            user.setUserId(email); // 이메일-> userId로 설정 (소셜로그인이므로)
-            user.setEmail("");     // 기존 이메일 -> 빈 값으로 설정
-            user.setName(name);
-            user.setPassword(passwordEncoder.encode("NaverOAuthPassword")); // 임의의 기본 PW 설정
+        Optional<User> optionalUser = userRepository.findByEmailAndName(email, name);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            logger.info("User found: {}", user);
+
             user.setSocialType("NAVER");
-
             userRepository.save(user);
-
-            Map<String, Object> result = new HashMap<>();
-            result.put("userId", user.getUserId()); // 이메일
-            result.put("email", user.getEmail());   // 빈 값
-            result.put("name", user.getName());
-
-            return result;
+            
+            logger.info("소셜 회원(NAVER)으로 연동되었습니다: {}", user);
+        } else {
+            logger.info("기존에 회원가입한 이력이 없습니다. 홈페이지에서 가입을 진행해주세요.");
         }
+        return optionalUser;
     }
 
     public void logout(String accessToken) {
@@ -86,10 +85,9 @@ public class NaverOAuthService {
         String url = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id={client_id}&client_secret={client_secret}&access_token={access_token}&service_provider=NAVER";
         Map<String, String> params = new HashMap<>();
         params.put("client_id", "50PITAaw8WSkVynGQgS6");
-        params.put("client_secret", "50PITAaw8WSkVynGQgS6");
+        params.put("client_secret", "kIqdzsVf8y");
         params.put("access_token", accessToken);
 
         restTemplate.getForObject(url, Void.class, params);
     }
 }
-

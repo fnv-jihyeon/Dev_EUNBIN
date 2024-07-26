@@ -35,7 +35,6 @@ export default {
         console.log("User Info:", this.naverLogin.user);
         console.log("Access Token:", this.naverLogin.accessToken.accessToken);
 
-        // 로그인 성공 후 액세스 토큰을 localStorage에 저장
         localStorage.setItem('naver_access_token', this.naverLogin.accessToken.accessToken);
       }
     });
@@ -51,12 +50,19 @@ export default {
             .then((response) => {
               console.log("로그아웃:", response.data);
 
-              // 로그아웃 후 localStorage에서 액세스 토큰 제거
               localStorage.removeItem('naver_access_token');
               this.$router.push('/');
             })
             .catch((error) => {
-              console.error("로그아웃 중 오류가 발생하였습니다:", error.response ? error.response.data : error.message);
+              // 서버에서 오류 메시지를 읽어옴
+              const errorMessage = error.response?.data?.error || "알 수 없는 오류가 발생했습니다.";
+
+              // 오류 메시지를 alert로 표시
+              alert(errorMessage);
+              // '기존에 회원가입한 이력이 없습니다.' 오류 메시지가 포함되어 있는 경우
+              if (errorMessage.includes("기존에 회원가입한 이력이 없습니다")) {
+                this.$router.push('/membership');
+              }
             });
       }
     }
